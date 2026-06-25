@@ -7,9 +7,9 @@
 <style>
   /* ====== Carte interactive de Drustvar ====== */
   :root {
-    --ink: #3d2008;          /* couleur des marqueurs (brun sépia) */
+    --ink: #441D07;          /* couleur des marqueurs (brun sépia) */
     --popup-bg: #f3ecd8;     /* fond parchemin du pop-up */
-    --popup-border: #3d2008;
+    --popup-border: #441D07;
     --popup-text: #2a1c0c;
   }
   * { box-sizing: border-box; }
@@ -20,18 +20,32 @@
     font-family: "Georgia", "Times New Roman", serif;
   }
 
+  /* La carte tient entièrement dans la fenêtre (vue d'ensemble au chargement) */
+  #map-stage {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
   #map-wrap {
     position: relative;
-    display: block;
-    width: 100%;
-    max-width: 2048px;     /* largeur native de la carte */
-    margin: 0 auto;
+    /* garde le ratio de la carte (2048 x 1536) et tient dans l'écran */
+    aspect-ratio: 2048 / 1536;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    /* astuce : occupe le plus possible tout en respectant les deux limites */
+    width: min(100vw, calc(100vh * 2048 / 1536));
     --u: 1px;              /* 1 unité = 1px de la carte d'origine, recalculé en JS */
   }
   #map-img {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: contain;
     user-select: none;
   }
   #markers {
@@ -47,7 +61,12 @@
     transform: translate(-50%, -50%);
     cursor: pointer;
     z-index: 2;
+    /* ombre douce pour poser le marqueur sur la carte */
+    filter: drop-shadow(0 1px 1.5px rgba(40, 20, 5, 0.45));
+    transition: transform 0.1s ease;
   }
+  .marker:hover { transform: translate(-50%, -50%) scale(1.18); z-index: 5; }
+
   .shape-small {
     display: block;
     width: max(6px, calc(11 * var(--u)));
@@ -76,6 +95,7 @@
     width: max(14px, calc(26 * var(--u)));
     height: max(14px, calc(26 * var(--u)));
     border: max(2px, calc(4 * var(--u))) solid var(--ink);
+    border-radius: max(1px, calc(2 * var(--u))); /* coins très légèrement adoucis */
     background: transparent;
     display: flex;
     align-items: center;
@@ -88,31 +108,12 @@
     background: var(--ink);
   }
 
-  .marker:hover { z-index: 5; }
   .marker:hover .shape-small,
   .marker:hover .shape-big,
   .marker:hover .shape-square {
     outline: 2px solid rgba(201, 164, 92, 0.95);
     outline-offset: 3px;
-    filter: drop-shadow(0 0 4px rgba(201, 164, 92, 0.7));
   }
-
-  .marker .tip {
-    position: absolute;
-    bottom: 135%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(20, 14, 6, 0.9);
-    color: #f3ecd8;
-    font-size: 13px;
-    padding: 3px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.12s;
-  }
-  .marker:hover .tip { opacity: 1; }
 
   /* ---- Pop-up ---- */
   #overlay {
@@ -166,9 +167,11 @@
 </head>
 <body>
 
-<div id="map-wrap">
-  <img id="map-img" src="Drustvarsanspoint.png" alt="Carte de Drustvar">
-  <div id="markers"></div>
+<div id="map-stage">
+  <div id="map-wrap">
+    <img id="map-img" src="Drustvarsanspoint.png" alt="Carte de Drustvar">
+    <div id="markers"></div>
+  </div>
 </div>
 
 <!-- Pop-up -->
@@ -252,8 +255,7 @@
       m.className = 'marker';
       m.style.left = loc.x + '%';
       m.style.top = loc.y + '%';
-      const tip = loc.name ? `<span class="tip">${loc.name}</span>` : '';
-      m.innerHTML = shapeHTML(loc.type) + tip;
+      m.innerHTML = shapeHTML(loc.type);
       m.addEventListener('click', () => openPopup(loc));
       markersLayer.appendChild(m);
     });
