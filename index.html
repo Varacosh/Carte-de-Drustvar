@@ -27,12 +27,10 @@
     overflow: hidden;
     position: relative;
     touch-action: none;       /* on gère nous-mêmes le tactile */
-    cursor: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyOCIgaGVpZ2h0PSIyOCIgdmlld0JveD0iMCAwIDI4IDI4Ij4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTQsMTQpIj4KPHBhdGggZD0iTTAsLTExIEwyLjIsLTIuMiBMMTEsMCBMMi4yLDIuMiBMMCwxMSBMLTIuMiwyLjIgTC0xMSwwIEwtMi4yLC0yLjIgWiIKZmlsbD0iIzQ0MUQwNyIgc3Ryb2tlPSIjZjNlY2Q4IiBzdHJva2Utd2lkdGg9IjEuMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8Y2lyY2xlIGN4PSIwIiBjeT0iMCIgcj0iMS41IiBmaWxsPSIjZjNlY2Q4Ii8+CjwvZz48L3N2Zz4=") 14 14, grab;
+    cursor: grab;
     background: #11161c;
   }
-  #map-stage.dragging {
-    cursor: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyOCIgaGVpZ2h0PSIyOCIgdmlld0JveD0iMCAwIDI4IDI4Ij4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTQsMTQpIj4KPHBhdGggZD0iTTAsLTExIEwyLjIsLTIuMiBMMTEsMCBMMi4yLDIuMiBMMCwxMSBMLTIuMiwyLjIgTC0xMSwwIEwtMi4yLC0yLjIgWiIKZmlsbD0iIzQ0MUQwNyIgc3Ryb2tlPSIjZjNlY2Q4IiBzdHJva2Utd2lkdGg9IjEuMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8Y2lyY2xlIGN4PSIwIiBjeT0iMCIgcj0iMS41IiBmaWxsPSIjZjNlY2Q4Ii8+CjwvZz48L3N2Zz4=") 14 14, grabbing;
-  }
+  #map-stage.dragging { cursor: grabbing; }
 
   /* ---- Boutons de zoom discrets ---- */
   #zoom-controls {
@@ -95,7 +93,7 @@
   .marker {
     position: absolute;
     transform: translate(-50%, -50%);
-    cursor: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgdmlld0JveD0iMCAwIDMwIDMwIj4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTUsMTUpIj4KPGNpcmNsZSByPSI4IiBmaWxsPSJub25lIiBzdHJva2U9IiM0NDFEMDciIHN0cm9rZS13aWR0aD0iMi40Ii8+CjxjaXJjbGUgcj0iOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjNlY2Q4IiBzdHJva2Utd2lkdGg9IjAuOSIvPgo8Y2lyY2xlIHI9IjEuNyIgZmlsbD0iIzQ0MUQwNyIvPgo8L2c+PC9zdmc+") 15 15, pointer;
+    cursor: pointer;
     z-index: 2;
     pointer-events: auto;      /* le marqueur reste cliquable */
     /* ombre douce pour poser le marqueur sur la carte */
