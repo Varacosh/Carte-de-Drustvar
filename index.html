@@ -24,35 +24,37 @@
   #map-stage {
     width: 100vw;
     height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     overflow: hidden;
-  }
-  #map-wrap {
     position: relative;
-    /* garde le ratio de la carte (2048 x 1536) et tient dans l'écran */
+    touch-action: none;       /* on gère nous-mêmes le tactile */
+    cursor: grab;
+    background: #11161c;
+  }
+  #map-stage.dragging { cursor: grabbing; }
+
+  #map-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
     aspect-ratio: 2048 / 1536;
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    /* astuce : occupe le plus possible tout en respectant les deux limites */
-    width: min(100vw, calc(100vh * 2048 / 1536));
-    --u: 1px;              /* 1 unité = 1px de la carte d'origine, recalculé en JS */
+    transform-origin: 0 0;     /* le zoom se calcule depuis le coin haut-gauche */
+    will-change: transform;
+    --u: 1px;                  /* 1 unité = 1px de la carte affichée, recalculé en JS */
   }
   #map-img {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: contain;
     user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;      /* l'image ne capte pas le glisser */
   }
   #markers {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
+    pointer-events: none;      /* le glisser passe à travers les zones vides */
   }
 
   /* ---- Marqueurs ---- */
@@ -61,6 +63,7 @@
     transform: translate(-50%, -50%);
     cursor: pointer;
     z-index: 2;
+    pointer-events: auto;      /* le marqueur reste cliquable */
     /* ombre douce pour poser le marqueur sur la carte */
     filter: drop-shadow(0 1px 1.5px rgba(40, 20, 5, 0.45));
     transition: transform 0.1s ease;
@@ -69,16 +72,16 @@
 
   .shape-small {
     display: block;
-    width: max(6px, calc(11 * var(--u)));
-    height: max(6px, calc(11 * var(--u)));
+    width: calc(11 * var(--u));
+    height: calc(11 * var(--u));
     border-radius: 50%;
     background: var(--ink);
   }
   .shape-big {
-    width: max(14px, calc(26 * var(--u)));
-    height: max(14px, calc(26 * var(--u)));
+    width: calc(26 * var(--u));
+    height: calc(26 * var(--u));
     border-radius: 50%;
-    border: max(2px, calc(4 * var(--u))) solid var(--ink);
+    border: calc(4 * var(--u)) solid var(--ink);
     background: transparent;
     display: flex;
     align-items: center;
@@ -86,16 +89,16 @@
   }
   .shape-big::after {
     content: '';
-    width: max(4px, calc(8 * var(--u)));
-    height: max(4px, calc(8 * var(--u)));
+    width: calc(8 * var(--u));
+    height: calc(8 * var(--u));
     border-radius: 50%;
     background: var(--ink);
   }
   .shape-square {
-    width: max(14px, calc(26 * var(--u)));
-    height: max(14px, calc(26 * var(--u)));
-    border: max(2px, calc(4 * var(--u))) solid var(--ink);
-    border-radius: max(1px, calc(2 * var(--u))); /* coins très légèrement adoucis */
+    width: calc(26 * var(--u));
+    height: calc(26 * var(--u));
+    border: calc(4 * var(--u)) solid var(--ink);
+    border-radius: calc(2 * var(--u)); /* coins très légèrement adoucis */
     background: transparent;
     display: flex;
     align-items: center;
@@ -103,8 +106,8 @@
   }
   .shape-square::after {
     content: '';
-    width: max(4px, calc(9 * var(--u)));
-    height: max(4px, calc(9 * var(--u)));
+    width: calc(9 * var(--u));
+    height: calc(9 * var(--u));
     background: var(--ink);
   }
 
@@ -236,7 +239,8 @@
   /* ============================================================
      MOTEUR DE LA CARTE — pas besoin d'y toucher
      ============================================================ */
-  const ORIG_WIDTH = 2048; // largeur native de la carte
+  const ORIG_W = 2048, ORIG_H = 1536;   // dimensions natives de la carte
+  const stage = document.getElementById('map-stage');
   const wrap = document.getElementById('map-wrap');
   const img = document.getElementById('map-img');
   const markersLayer = document.getElementById('markers');
@@ -256,20 +260,137 @@
       m.style.left = loc.x + '%';
       m.style.top = loc.y + '%';
       m.innerHTML = shapeHTML(loc.type);
-      m.addEventListener('click', () => openPopup(loc));
+      m.addEventListener('click', (e) => { e.stopPropagation(); openPopup(loc); });
       markersLayer.appendChild(m);
     });
   }
 
-  function updateScale() {
-    const displayed = img.getBoundingClientRect().width;
-    if (displayed > 0) {
-      wrap.style.setProperty('--u', (displayed / ORIG_WIDTH) + 'px');
-    }
+  /* ---- Zoom & déplacement ---- */
+  let baseW = 0, baseH = 0;   // taille de la carte à l'échelle 1 (ajustée à l'écran)
+  let scale = 1;              // facteur de zoom courant
+  let tx = 0, ty = 0;         // décalage (translation) courant
+  let minScale = 1;
+  const MAX_SCALE = 6;
+
+  // calcule la taille de base : la carte entière tient dans la fenêtre
+  function computeBase() {
+    const vw = stage.clientWidth, vh = stage.clientHeight;
+    const fit = Math.min(vw / ORIG_W, vh / ORIG_H);
+    baseW = ORIG_W * fit;
+    baseH = ORIG_H * fit;
+    wrap.style.width = baseW + 'px';
+    wrap.style.height = baseH + 'px';
+    // l'unité des marqueurs suit la taille de base (le zoom est géré par transform)
+    wrap.style.setProperty('--u', (baseW / ORIG_W) + 'px');
   }
 
+  function clamp() {
+    const vw = stage.clientWidth, vh = stage.clientHeight;
+    const w = baseW * scale, h = baseH * scale;
+    // si la carte est plus petite que la fenêtre sur un axe, on la centre
+    if (w <= vw) { tx = (vw - w) / 2; }
+    else { tx = Math.min(0, Math.max(vw - w, tx)); }
+    if (h <= vh) { ty = (vh - h) / 2; }
+    else { ty = Math.min(0, Math.max(vh - h, ty)); }
+  }
+
+  function apply() {
+    clamp();
+    wrap.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+  }
+
+  function resetView() {
+    computeBase();
+    scale = 1; minScale = 1;
+    tx = 0; ty = 0;
+    apply();
+  }
+
+  // zoom à la molette, centré sur le curseur
+  stage.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const rect = stage.getBoundingClientRect();
+    const cx = e.clientX - rect.left;
+    const cy = e.clientY - rect.top;
+    const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+    const newScale = Math.min(MAX_SCALE, Math.max(minScale, scale * factor));
+    if (newScale === scale) return;
+    // garde le point sous le curseur fixe pendant le zoom
+    const k = newScale / scale;
+    tx = cx - k * (cx - tx);
+    ty = cy - k * (cy - ty);
+    scale = newScale;
+    apply();
+  }, { passive: false });
+
+  // déplacement à la souris
+  let dragging = false, moved = false, sx = 0, sy = 0;
+  stage.addEventListener('mousedown', (e) => {
+    dragging = true; moved = false;
+    sx = e.clientX - tx; sy = e.clientY - ty;
+    stage.classList.add('dragging');
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    tx = e.clientX - sx; ty = e.clientY - sy;
+    moved = true;
+    apply();
+  });
+  window.addEventListener('mouseup', () => {
+    dragging = false;
+    stage.classList.remove('dragging');
+  });
+
+  // double-clic : réinitialise la vue d'ensemble
+  stage.addEventListener('dblclick', resetView);
+
+  /* ---- Tactile : pincer pour zoomer, glisser pour déplacer ---- */
+  let touchMode = null, lastDist = 0, lastMid = null;
+  stage.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      touchMode = 'pan';
+      sx = e.touches[0].clientX - tx; sy = e.touches[0].clientY - ty;
+    } else if (e.touches.length === 2) {
+      touchMode = 'pinch';
+      lastDist = touchDist(e); lastMid = touchMid(e);
+    }
+  }, { passive: false });
+  stage.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (touchMode === 'pan' && e.touches.length === 1) {
+      tx = e.touches[0].clientX - sx; ty = e.touches[0].clientY - sy;
+      apply();
+    } else if (touchMode === 'pinch' && e.touches.length === 2) {
+      const dist = touchDist(e), mid = touchMid(e);
+      const rect = stage.getBoundingClientRect();
+      const cx = mid.x - rect.left, cy = mid.y - rect.top;
+      const newScale = Math.min(MAX_SCALE, Math.max(minScale, scale * (dist / lastDist)));
+      const k = newScale / scale;
+      tx = cx - k * (cx - tx);
+      ty = cy - k * (cy - ty);
+      scale = newScale;
+      lastDist = dist;
+      apply();
+    }
+  }, { passive: false });
+  stage.addEventListener('touchend', (e) => {
+    if (e.touches.length === 0) touchMode = null;
+    else if (e.touches.length === 1) { touchMode = 'pan'; sx = e.touches[0].clientX - tx; sy = e.touches[0].clientY - ty; }
+  });
+  function touchDist(e) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    return Math.hypot(dx, dy);
+  }
+  function touchMid(e) {
+    return { x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+             y: (e.touches[0].clientY + e.touches[1].clientY) / 2 };
+  }
+
+  /* ---- Pop-up ---- */
   const overlay = document.getElementById('overlay');
   function openPopup(loc) {
+    if (moved) return; // ne pas ouvrir si on vient de glisser
     document.getElementById('popup-title').textContent = loc.name || ('Lieu n°' + loc.id);
     document.getElementById('popup-body').innerHTML = loc.text || '';
     overlay.classList.add('open');
@@ -280,10 +401,11 @@
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePopup(); });
 
-  window.addEventListener('resize', updateScale);
-  img.addEventListener('load', updateScale);
+  /* ---- Init ---- */
+  window.addEventListener('resize', resetView);
   buildMarkers();
-  if (img.complete) updateScale();
+  if (img.complete) resetView(); else img.addEventListener('load', resetView);
 </script>
 </body>
 </html>
+
