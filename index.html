@@ -100,17 +100,22 @@
     filter: drop-shadow(0 1px 1.5px rgba(40, 20, 5, 0.45));
     transition: transform 0.1s ease;
   }
-  /* battement très léger et lent du marqueur (taille seule, pas d'opacité) */
+  /* respiration en fondu : le marqueur s'éclaircit et s'assombrit dans sa propre encre */
   .marker {
-    animation: marker-breathe 3.6s ease-in-out infinite;
+    animation: marker-breathe 3.4s ease-in-out infinite;
     animation-delay: var(--pulse-delay, 0s);
   }
   @keyframes marker-breathe {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    50%      { transform: translate(-50%, -50%) scale(1.1); }
+    0%, 100% { opacity: 0.5; }
+    50%      { opacity: 1; }
   }
-  /* au survol, le battement s'arrête et l'effet de survol prend le relais */
-  .marker:hover { animation: none; transform: translate(-50%, -50%) scale(1.22); z-index: 5; }
+  /* au survol : marqueur plein et net, légèrement agrandi. Aucun contour coloré. */
+  .marker:hover {
+    animation: none;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.25);
+    z-index: 5;
+  }
 
   .shape-small {
     display: block;
@@ -151,13 +156,6 @@
     width: calc(9 * var(--u));
     height: calc(9 * var(--u));
     background: var(--ink);
-  }
-
-  .marker:hover .shape-small,
-  .marker:hover .shape-big,
-  .marker:hover .shape-square {
-    outline: 2px solid rgba(201, 164, 92, 0.95);
-    outline-offset: 3px;
   }
 
   /* ---- Pop-up ---- */
