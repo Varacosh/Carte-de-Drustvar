@@ -100,19 +100,8 @@
     filter: drop-shadow(0 1px 1.5px rgba(40, 20, 5, 0.45));
     transition: transform 0.1s ease;
   }
-  /* respiration en fondu : le marqueur s'éclaircit et s'assombrit dans sa propre encre */
-  .marker {
-    animation: marker-breathe 3.4s ease-in-out infinite;
-    animation-delay: var(--pulse-delay, 0s);
-  }
-  @keyframes marker-breathe {
-    0%, 100% { opacity: 0.5; }
-    50%      { opacity: 1; }
-  }
-  /* au survol : marqueur plein et net, légèrement agrandi. Aucun contour coloré. */
+  /* au survol : marqueur légèrement agrandi, sans contour ni couleur ajoutée */
   .marker:hover {
-    animation: none;
-    opacity: 1;
     transform: translate(-50%, -50%) scale(1.25);
     z-index: 5;
   }
@@ -364,7 +353,6 @@
       m.style.left = loc.x + '%';
       m.style.top = loc.y + '%';
       m.innerHTML = shapeHTML(loc.type);
-      m.style.setProperty('--pulse-delay', (-Math.random() * 2.6).toFixed(2) + 's');
       m.addEventListener('click', (e) => { e.stopPropagation(); openPopup(loc); });
       markersLayer.appendChild(m);
     });
