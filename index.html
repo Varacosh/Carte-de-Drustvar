@@ -154,65 +154,134 @@
   #overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(20, 12, 4, 0.62);
+    backdrop-filter: blur(2px);
     display: none;
     align-items: center;
     justify-content: center;
     z-index: 100;
   }
-  #overlay.open { display: flex; }
+  #overlay.open { display: flex; animation: overlay-in 0.25s ease; }
+  @keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
+
   #popup {
     position: relative;
-    background: var(--popup-bg);
+    background:
+      radial-gradient(circle at 30% 18%, rgba(255, 250, 235, 0.6), rgba(255,250,235,0) 60%),
+      linear-gradient(160deg, #f6efdc 0%, #efe6cd 55%, #e7dcc0 100%);
     color: var(--popup-text);
-    border: 3px solid var(--popup-border);
-    border-radius: 8px;
-    max-width: 460px;
+    border: 1px solid #8a6a3a;
+    border-radius: 10px;
+    max-width: 470px;
     width: calc(100% - 48px);
-    max-height: 80vh;
+    max-height: 82vh;
     overflow-y: auto;
-    padding: 24px 28px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    padding: 30px 32px 32px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55),
+                inset 0 0 0 5px rgba(243, 236, 216, 0.9),
+                inset 0 0 0 6px rgba(138, 106, 58, 0.55);
+    animation: popup-in 0.32s cubic-bezier(0.2, 0.8, 0.3, 1);
   }
+  @keyframes popup-in {
+    from { opacity: 0; transform: translateY(14px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* barre de défilement discrète et assortie */
+  #popup::-webkit-scrollbar { width: 10px; }
+  #popup::-webkit-scrollbar-track { background: transparent; }
+  #popup::-webkit-scrollbar-thumb {
+    background: rgba(138, 106, 58, 0.45);
+    border-radius: 6px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+  #popup::-webkit-scrollbar-thumb:hover { background: rgba(138, 106, 58, 0.7); background-clip: padding-box; }
+
   #popup h2 {
-    margin: 0 0 12px;
-    font-size: 24px;
-    border-bottom: 2px solid rgba(61, 32, 8, 0.3);
-    padding-bottom: 8px;
+    margin: 0 0 6px;
+    font-size: 25px;
+    text-align: center;
+    letter-spacing: 0.5px;
+    color: #3a2208;
   }
-  #popup .body { font-size: 16px; line-height: 1.6; }
+  /* ornement sous le titre : filet + losange central */
+  #popup .title-rule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 0 16px;
+    color: #9a7a4a;
+  }
+  #popup .title-rule::before,
+  #popup .title-rule::after {
+    content: '';
+    height: 1px;
+    width: 64px;
+    background: linear-gradient(to right, rgba(138,106,58,0), rgba(138,106,58,0.7));
+  }
+  #popup .title-rule::after { background: linear-gradient(to left, rgba(138,106,58,0), rgba(138,106,58,0.7)); }
+  #popup .title-rule span { font-size: 11px; }
+
+  #popup .body {
+    font-size: 16px;
+    line-height: 1.68;
+    text-align: justify;
+    hyphens: auto;
+  }
+  /* lettrine discrète sur le premier paragraphe */
+  #popup .body::first-letter {
+    font-size: 2.6em;
+    line-height: 0.8;
+    float: left;
+    margin: 4px 8px 0 0;
+    color: #6a4a1a;
+    font-weight: 600;
+  }
   #popup .body:empty::before {
     content: "(Aucun texte pour ce lieu pour le moment.)";
     color: #8a7a5c;
     font-style: italic;
+    float: none;
   }
+  #popup .body:empty::first-letter { font-size: inherit; float: none; margin: 0; color: inherit; }
+
   #popup .close {
     position: absolute;
-    top: 10px;
+    top: 12px;
     right: 14px;
-    background: none;
-    border: none;
-    font-size: 26px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(138, 106, 58, 0.12);
+    border: 1px solid rgba(138, 106, 58, 0.35);
+    border-radius: 50%;
+    font-size: 20px;
     line-height: 1;
     cursor: pointer;
     color: var(--popup-border);
+    transition: background 0.12s, transform 0.12s;
+    z-index: 2;
   }
-  #popup .close:hover { color: #7a3a1a; }
+  #popup .close:hover { background: rgba(138, 106, 58, 0.28); transform: rotate(90deg); }
 
   /* Image (blason) en haut du pop-up */
   #popup-image { text-align: center; }
   #popup-image:empty { display: none; }
   #popup-image img {
-    max-width: 200px;
-    max-height: 220px;
+    max-width: 190px;
+    max-height: 210px;
     width: auto;
     height: auto;
-    margin: 4px auto 14px;
+    margin: 2px auto 10px;
     cursor: zoom-in;
-    transition: transform 0.12s;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+    transition: transform 0.15s;
+    filter: drop-shadow(0 3px 7px rgba(40, 24, 8, 0.3));
   }
-  #popup-image img:hover { transform: scale(1.04); }
+  #popup-image img:hover { transform: scale(1.05); }
 
   /* devise héraldique entre le blason et le texte */
   #popup-devise { text-align: center; }
@@ -222,7 +291,7 @@
     font-style: italic;
     font-size: 16px;
     color: #5a3a1a;
-    padding: 4px 22px 12px;
+    padding: 4px 22px 16px;
     position: relative;
   }
   #popup-devise .devise-inner::before,
@@ -289,6 +358,7 @@
   <div id="popup">
     <button class="close" aria-label="Fermer" onclick="closePopup()">&times;</button>
     <h2 id="popup-title"></h2>
+    <div class="title-rule"><span>◆</span></div>
     <div id="popup-image"></div>
     <div id="popup-devise"></div>
     <div class="body" id="popup-body"></div>
