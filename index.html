@@ -100,35 +100,17 @@
     filter: drop-shadow(0 1px 1.5px rgba(40, 20, 5, 0.45));
     transition: transform 0.1s ease;
   }
-  /* anneau qui ondule doucement depuis le marqueur (effet "point d'intérêt") */
-  .marker::before,
-  .marker::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: calc(26 * var(--u));
-    height: calc(26 * var(--u));
-    border-radius: 50%;
-    border: max(1.5px, calc(2.5 * var(--u))) solid rgba(201, 164, 92, 0.9);
-    transform: translate(-50%, -50%) scale(0.6);
-    pointer-events: none;
-    opacity: 0;
-    animation: marker-ripple 3s ease-out infinite;
+  /* battement très léger et lent du marqueur (taille seule, pas d'opacité) */
+  .marker {
+    animation: marker-breathe 3.6s ease-in-out infinite;
     animation-delay: var(--pulse-delay, 0s);
   }
-  /* le second anneau est décalé d'une demi-période pour une onde continue */
-  .marker::after {
-    animation-delay: calc(var(--pulse-delay, 0s) - 1.5s);
+  @keyframes marker-breathe {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50%      { transform: translate(-50%, -50%) scale(1.1); }
   }
-  @keyframes marker-ripple {
-    0%   { opacity: 0;    transform: translate(-50%, -50%) scale(0.55); }
-    15%  { opacity: 0.85; }
-    100% { opacity: 0;    transform: translate(-50%, -50%) scale(2.1); }
-  }
-  /* au survol, l'onde se calme et l'effet de survol prend le relais */
-  .marker:hover::before, .marker:hover::after { animation: none; opacity: 0; }
-  .marker:hover { transform: translate(-50%, -50%) scale(1.18); z-index: 5; }
+  /* au survol, le battement s'arrête et l'effet de survol prend le relais */
+  .marker:hover { animation: none; transform: translate(-50%, -50%) scale(1.22); z-index: 5; }
 
   .shape-small {
     display: block;
