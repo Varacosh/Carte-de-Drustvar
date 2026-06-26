@@ -11,6 +11,8 @@
     --popup-bg: #f3ecd8;     /* fond parchemin du pop-up */
     --popup-border: #441D07;
     --popup-text: #2a1c0c;
+    /* curseur flèche personnalisé, réutilisable partout */
+    --cursor-arrow: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij4KPHBhdGggZD0iTTIsMiBMMiwxOCBMNi4yLDE0LjIgTDkuMiwyMSBMMTIsMTkuOCBMOSwxMy4yIEwxNC41LDEzIFoiCmZpbGw9IiM0NDFEMDciIHN0cm9rZT0iI2YzZWNkOCIgc3Ryb2tlLXdpZHRoPSIxLjMiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+") 2 2, default;
   }
   * { box-sizing: border-box; }
   html, body {
@@ -18,6 +20,7 @@
     padding: 0;
     background: #11161c;
     font-family: "Georgia", "Times New Roman", serif;
+    cursor: var(--cursor-arrow);   /* curseur personnalisé par défaut partout */
   }
 
   /* La carte tient entièrement dans la fenêtre (vue d'ensemble au chargement) */
@@ -27,7 +30,7 @@
     overflow: hidden;
     position: relative;
     touch-action: none;       /* on gère nous-mêmes le tactile */
-    cursor: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij4KPHBhdGggZD0iTTIsMiBMMiwxOCBMNi4yLDE0LjIgTDkuMiwyMSBMMTIsMTkuOCBMOSwxMy4yIEwxNC41LDEzIFoiCmZpbGw9IiM0NDFEMDciIHN0cm9rZT0iI2YzZWNkOCIgc3Ryb2tlLXdpZHRoPSIxLjMiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+") 2 2, default;
+    cursor: var(--cursor-arrow);
     background: #11161c;
   }
   #map-stage.dragging { cursor: grabbing; }
@@ -211,6 +214,28 @@
   }
   #popup-image img:hover { transform: scale(1.04); }
 
+  /* devise héraldique entre le blason et le texte */
+  #popup-devise { text-align: center; }
+  #popup-devise:empty { display: none; }
+  #popup-devise .devise-inner {
+    display: inline-block;
+    font-style: italic;
+    font-size: 16px;
+    color: #5a3a1a;
+    padding: 4px 22px 12px;
+    position: relative;
+  }
+  #popup-devise .devise-inner::before,
+  #popup-devise .devise-inner::after {
+    content: "«";
+    font-style: normal;
+    color: #9a7a4a;
+    font-size: 16px;
+    margin: 0 6px;
+    vertical-align: baseline;
+  }
+  #popup-devise .devise-inner::after { content: "»"; }
+
   /* Lightbox : image en grand */
   #lightbox {
     position: fixed;
@@ -265,6 +290,7 @@
     <button class="close" aria-label="Fermer" onclick="closePopup()">&times;</button>
     <h2 id="popup-title"></h2>
     <div id="popup-image"></div>
+    <div id="popup-devise"></div>
     <div class="body" id="popup-body"></div>
   </div>
 </div>
@@ -296,7 +322,7 @@
     { id:  8, name: "Cornemont", x: 48.096, y: 27.773, type: "big", text: "", image: "Tromann.png" },
     { id:  9, name: "Hauts de Corlain", x: 33.496, y: 15.755, type: "square", text: "", image: "Malvoie.png" },
     { id: 10, name: "Corlain", x: 29.785, y: 25.482, type: "big", text: "" },
-    { id: 11, name: "Tour Crefort", x: 37.5, y: 54.349, type: "small", image: "Crefort.png", text: `Dressée sur les hauteurs qui surplombent la forêt Cramoisie, la tour Crefort veillait jadis sur les sentiers s'enfonçant sous le couvert des arbres. La maison éponyme y entretenait une garnison réduite, mais redoutablement aguerrie. La rumeur prêtait à chacun de ses soldats la valeur de cinq hommes, tant ils excellaient à exploiter le terrain pour renverser le cours d'un affrontement.<br><br>La chute de cette lignée remonte au jour où la maison Bonval se dressa contre les Malvoie et défia l'ensemble de Drustvar. Hattie Crefort, qui commandait alors les siens, embrassa la cause des rebelles. Devant Froidecombe, alors qu'elle s'efforçait de contenir la coalition levée contre Bonval, elle succomba sous les coups de Heideck Tertrebois, au terme d'un duel impitoyable.<br><br>Lorsque la nouvelle de sa défaite gagna la tour, une poignée de soldats y montait encore la garde. Reniant leur serment, ils pillèrent les biens qu'on leur avait confiés avant de prendre la route, où ils sévissent désormais comme détrousseurs.<br><br>Dame Lucille Malvoie octroya sa grâce à Cierra Crefort, dernière descendante de son nom, estimant qu'un enfant ne saurait répondre des fautes de ses parents. La jeune fille grandit aujourd'hui au manoir Malvoie, où elle reçoit l'éducation que mérite son rang. Lorsque sonnera l'heure de sa majorité, la tour lui échoira probablement de droit. D'ici là, abandonnée à elle-même, elle se délabre lentement sous l'œuvre du temps.` },
+    { id: 11, name: "Tour Crefort", x: 37.5, y: 54.349, type: "small", image: "Crefort.png", devise: "Forgés par le feu, tempérés par l'honneur", text: `Dressée sur les hauteurs qui surplombent la forêt Cramoisie, la tour Crefort veillait jadis sur les sentiers s'enfonçant sous le couvert des arbres. La maison éponyme y entretenait une garnison réduite, mais redoutablement aguerrie. La rumeur prêtait à chacun de ses soldats la valeur de cinq hommes, tant ils excellaient à exploiter le terrain pour renverser le cours d'un affrontement.<br><br>La chute de cette lignée remonte au jour où la maison Bonval se dressa contre les Malvoie et défia l'ensemble de Drustvar. Hattie Crefort, qui commandait alors les siens, embrassa la cause des rebelles. Devant Froidecombe, alors qu'elle s'efforçait de contenir la coalition levée contre Bonval, elle succomba sous les coups de Heideck Tertrebois, au terme d'un duel impitoyable.<br><br>Lorsque la nouvelle de sa défaite gagna la tour, une poignée de soldats y montait encore la garde. Reniant leur serment, ils pillèrent les biens qu'on leur avait confiés avant de prendre la route, où ils sévissent désormais comme détrousseurs.<br><br>Dame Lucille Malvoie octroya sa grâce à Cierra Crefort, dernière descendante de son nom, estimant qu'un enfant ne saurait répondre des fautes de ses parents. La jeune fille grandit aujourd'hui au manoir Malvoie, où elle reçoit l'éducation que mérite son rang. Lorsque sonnera l'heure de sa majorité, la tour lui échoira probablement de droit. D'ici là, abandonnée à elle-même, elle se délabre lentement sous l'œuvre du temps.` },
     { id: 12, name: "Rucherain", x: 44.922, y: 55, type: "big", text: "", image: "Mellifor.png" },
     { id: 13, name: "Griseroche", x: 38.721, y: 62.292, type: "big", text: "", image: "Forpin.png" },
     { id: 14, name: "Tertrebois", x: 62.451, y: 53.411, type: "big", text: "", image: "Tertrebois.png" },
@@ -516,6 +542,9 @@
     } else {
       imgBox.innerHTML = '';
     }
+    // devise éventuelle (entre le blason et le texte)
+    const deviseBox = document.getElementById('popup-devise');
+    deviseBox.innerHTML = loc.devise ? '<span class="devise-inner">' + loc.devise + '</span>' : '';
     document.getElementById('popup-body').innerHTML = loc.text || '';
     overlay.classList.add('open');
   }
