@@ -100,28 +100,29 @@
     filter: drop-shadow(0 1px 1.5px rgba(40, 20, 5, 0.45));
     transition: transform 0.1s ease;
   }
-  /* halo qui pulse doucement pour signaler que le marqueur est cliquable */
+  /* léger halo doré qui respire, pour signaler discrètement le clic */
   .marker::before {
     content: '';
     position: absolute;
     top: 50%;
     left: 50%;
-    width: calc(30 * var(--u));
-    height: calc(30 * var(--u));
+    width: calc(150% + 6 * var(--u));
+    height: calc(150% + 6 * var(--u));
     border-radius: 50%;
-    border: calc(2 * var(--u)) solid rgba(201, 164, 92, 0.6);
     transform: translate(-50%, -50%);
     pointer-events: none;
-    animation: marker-pulse 2.6s ease-out infinite;
+    background: radial-gradient(circle,
+                rgba(201, 164, 92, 0.55) 0%,
+                rgba(201, 164, 92, 0.28) 40%,
+                rgba(201, 164, 92, 0) 70%);
+    animation: marker-glow 3.2s ease-in-out infinite;
     animation-delay: var(--pulse-delay, 0s);
-    z-index: -1;
   }
-  @keyframes marker-pulse {
-    0%   { opacity: 0;   transform: translate(-50%, -50%) scale(0.45); }
-    35%  { opacity: 0.75; }
-    100% { opacity: 0;   transform: translate(-50%, -50%) scale(1.5); }
+  @keyframes marker-glow {
+    0%, 100% { opacity: 0.15; }
+    50%      { opacity: 0.9; }
   }
-  /* au survol, le halo s'arrête et laisse place à l'effet de survol */
+  /* au survol, le halo se calme et l'effet de survol prend le relais */
   .marker:hover::before { animation: none; opacity: 0; }
   .marker:hover { transform: translate(-50%, -50%) scale(1.18); z-index: 5; }
 
