@@ -198,6 +198,54 @@
     color: var(--popup-border);
   }
   #popup .close:hover { color: #7a3a1a; }
+
+  /* Image (blason) en haut du pop-up */
+  #popup-image { text-align: center; }
+  #popup-image:empty { display: none; }
+  #popup-image img {
+    max-width: 200px;
+    max-height: 220px;
+    width: auto;
+    height: auto;
+    margin: 4px auto 14px;
+    cursor: zoom-in;
+    transition: transform 0.12s;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+  }
+  #popup-image img:hover { transform: scale(1.04); }
+
+  /* Lightbox : image en grand */
+  #lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    cursor: zoom-out;
+  }
+  #lightbox.open { display: flex; }
+  #lightbox img {
+    max-width: 92vw;
+    max-height: 92vh;
+    width: auto;
+    height: auto;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+  }
+  #lightbox .close {
+    position: absolute;
+    top: 18px;
+    right: 24px;
+    background: none;
+    border: none;
+    font-size: 40px;
+    line-height: 1;
+    cursor: pointer;
+    color: #f3ecd8;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  }
+  #lightbox .close:hover { color: #fff; }
 </style>
 </head>
 <body>
@@ -219,8 +267,15 @@
   <div id="popup">
     <button class="close" aria-label="Fermer" onclick="closePopup()">&times;</button>
     <h2 id="popup-title"></h2>
+    <div id="popup-image"></div>
     <div class="body" id="popup-body"></div>
   </div>
+</div>
+
+<!-- Image en grand (clic sur le blason) -->
+<div id="lightbox">
+  <button class="close" aria-label="Fermer" onclick="closeLightbox()">&times;</button>
+  <img id="lightbox-img" src="" alt="">
 </div>
 
 <script>
@@ -228,6 +283,9 @@
      LIEUX DE LA CARTE
      Pour écrire un pop-up, remplis le champ "text" du lieu voulu.
      HTML simple autorisé : <b>gras</b>, <i>italique</i>, <br> saut de ligne.
+     Pour afficher une image (ex: un blason) en haut du pop-up, ajoute un champ
+       image: "NomDuFichier.png"   (le fichier doit être à côté de index.html)
+     L'image est cliquable pour s'ouvrir en grand.
      Ne touche pas à x, y et type (position et forme du marqueur).
      ============================================================ */
   const LOCATIONS = [
@@ -243,7 +301,7 @@
     { id: 10, name: "Corlain", x: 29.785, y: 25.482, type: "big", text: "" },
     { id: 11, name: "Tour Crefort", x: 37.5, y: 54.349, type: "small", text: "" },
     { id: 12, name: "Rucherain", x: 44.922, y: 55, type: "big", text: "" },
-    { id: 13, name: "Griseroche", x: 38.721, y: 62.292, type: "big", text: "" },
+    { id: 13, name: "Griseroche", x: 38.721, y: 62.292, type: "big", text: "", image: "Forpin.png" },
     { id: 14, name: "Tertrebois", x: 62.451, y: 53.411, type: "big", text: "" },
     { id: 15, name: "Cimetière de Tertrebois", x: 64.453, y: 47.617, type: "small", text: "" },
     { id: 16, name: "Ruisseval", x: 60.352, y: 38.307, type: "big", text: "" },
@@ -441,17 +499,47 @@
 
   /* ---- Pop-up ---- */
   const overlay = document.getElementById('overlay');
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+
   function openPopup(loc) {
     if (moved) return; // ne pas ouvrir si on vient de glisser
     document.getElementById('popup-title').textContent = loc.name || ('Lieu n°' + loc.id);
+    // image (blason) éventuelle
+    const imgBox = document.getElementById('popup-image');
+    if (loc.image) {
+      imgBox.innerHTML = '';
+      const im = document.createElement('img');
+      im.src = loc.image;
+      im.alt = loc.name || '';
+      im.title = "Cliquer pour agrandir";
+      im.addEventListener('click', () => openLightbox(loc.image, loc.name));
+      imgBox.appendChild(im);
+    } else {
+      imgBox.innerHTML = '';
+    }
     document.getElementById('popup-body').innerHTML = loc.text || '';
     overlay.classList.add('open');
   }
   function closePopup() {
     overlay.classList.remove('open');
   }
+  function openLightbox(src, alt) {
+    lightboxImg.src = src;
+    lightboxImg.alt = alt || '';
+    lightbox.classList.add('open');
+  }
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    lightboxImg.src = '';
+  }
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePopup(); });
+  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (lightbox.classList.contains('open')) closeLightbox();  // l'image se ferme en premier
+    else closePopup();
+  });
 
   /* ---- Init ---- */
   document.getElementById('zoom-in').addEventListener('click', () => zoomButton(1));
