@@ -100,6 +100,29 @@
     filter: drop-shadow(0 1px 1.5px rgba(40, 20, 5, 0.45));
     transition: transform 0.1s ease;
   }
+  /* halo qui pulse doucement pour signaler que le marqueur est cliquable */
+  .marker::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(30 * var(--u));
+    height: calc(30 * var(--u));
+    border-radius: 50%;
+    border: calc(2 * var(--u)) solid rgba(201, 164, 92, 0.6);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: marker-pulse 2.6s ease-out infinite;
+    animation-delay: var(--pulse-delay, 0s);
+    z-index: -1;
+  }
+  @keyframes marker-pulse {
+    0%   { opacity: 0;   transform: translate(-50%, -50%) scale(0.45); }
+    35%  { opacity: 0.75; }
+    100% { opacity: 0;   transform: translate(-50%, -50%) scale(1.5); }
+  }
+  /* au survol, le halo s'arrête et laisse place à l'effet de survol */
+  .marker:hover::before { animation: none; opacity: 0; }
   .marker:hover { transform: translate(-50%, -50%) scale(1.18); z-index: 5; }
 
   .shape-small {
@@ -356,6 +379,7 @@
       m.style.left = loc.x + '%';
       m.style.top = loc.y + '%';
       m.innerHTML = shapeHTML(loc.type);
+      m.style.setProperty('--pulse-delay', (-Math.random() * 2.6).toFixed(2) + 's');
       m.addEventListener('click', (e) => { e.stopPropagation(); openPopup(loc); });
       markersLayer.appendChild(m);
     });
