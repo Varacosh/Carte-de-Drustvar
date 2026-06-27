@@ -318,11 +318,10 @@
   }
   #lightbox.open { display: flex; }
   #lightbox img {
-    max-width: 92vw;
-    max-height: 92vh;
-    width: auto;
-    height: auto;
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+    width: min(600px, 88vw);
+    height: min(600px, 88vh);
+    object-fit: contain;        /* l'image s'inscrit dans le cadre sans déformation */
+    filter: drop-shadow(0 8px 40px rgba(0, 0, 0, 0.6));
   }
   #lightbox .close {
     position: absolute;
@@ -398,7 +397,7 @@
     { id: 14, name: "Tertrebois", x: 62.451, y: 53.411, type: "big", text: "", image: "Tertrebois.png" },
     { id: 15, name: "Cimetière de Tertrebois", x: 64.453, y: 47.617, type: "small", text: "" },
     { id: 16, name: "Ruisseval", x: 60.352, y: 38.307, type: "big", text: "" },
-    { id: 17, name: "Havrebrune", x: 62.549, y: 33.477, type: "big", text: "" },
+    { id: 17, name: "Havrebrune", x: 62.549, y: 33.477, type: "big", text: "", image: "Havrebrune.png" },
     { id: 18, name: "Port du Désosseur", x: 69.678, y: 28.789, type: "big", text: "" },
     { id: 19, name: "Manoir Valautomne", x: 60.498, y: 21.406, type: "small", text: "" },
     { id: 20, name: "Quai du Trident", x: 57.959, y: 7.487, type: "big", text: "", image: "Sombrabysse.png" },
