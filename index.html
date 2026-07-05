@@ -268,18 +268,29 @@
   }
   #popup .close:hover { background: rgba(138, 106, 58, 0.28); transform: rotate(90deg); }
 
-  /* Image (blason) en haut du pop-up */
-  #popup-image { text-align: center; }
+  /* Image(s) (blason) en haut du pop-up */
+  #popup-image {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 18px;
+  }
   #popup-image:empty { display: none; }
   #popup-image img {
     max-width: 190px;
     max-height: 210px;
     width: auto;
     height: auto;
-    margin: 2px auto 10px;
+    margin: 2px 0 10px;
     cursor: zoom-in;
     transition: transform 0.15s;
     filter: drop-shadow(0 3px 7px rgba(40, 24, 8, 0.3));
+  }
+  /* quand il y a deux blasons ou plus, on les réduit un peu pour qu'ils tiennent côte à côte */
+  #popup-image img:not(:only-child) {
+    max-width: 150px;
+    max-height: 170px;
   }
   #popup-image img:hover { transform: scale(1.05); }
 
@@ -399,8 +410,8 @@
     { id: 17, name: "Havrebrune", x: 62.549, y: 33.477, type: "big", text: "", image: "Havrebrune.png" },
     { id: 18, name: "Port du Désosseur", x: 69.678, y: 28.789, type: "big", text: "", image: "Portdudesosseur.png" },
     { id: 19, name: "Manoir Valautomne", x: 60.498, y: 21.406, type: "small", text: "", image: "Valautomne.png" },
-    { id: 20, name: "Quai du Trident", x: 57.959, y: 7.487, type: "big", text: `Au point exact où la grande mer se fraie un passage entre les ombreuses forêts de Drustvar et la rade de Tiragarde se dresse le Quai du Trident, village singulier dont les édifices se déploient tout à la fois sur l'une et l'autre berge. Aussi nul seigneur ne saurait-il prétendre à sa pleine possession : sise à mi-chemin entre deux contrées, au cœur même de cette brèche maritime, la localité ne relève que de l'autorité conciliatrice de la maison Chantorage, qui préside aux affaires des flots au nom du culte voué à la Mère des Marées.<br><br>Toutefois, bien au-delà des seuls avantages que lui confère son assise géographique, le Quai du Trident doit sa longue prospérité à la munificence de ses eaux. Depuis des temps immémoriaux, en effet, l'abondance des ressources marines alimente la fortune du lieu, au rythme incessant des chalutiers, pêcheurs et pourfendeurs de monstres marins qui, revenus du large, déchargent leurs prises vers les ateliers de la berge méridionale. Sur la rive opposée, à l'inverse, se déploient marchés et échoppes, où s'amoncellent denrées locales et marchandises venues d'horizons lointains ; là se presse une foule laborieuse et bigarrée, mêlant matelots, ouvriers, ravaudeurs, négociants, aventuriers et eaugures.<br><br>Une telle quiétude, cependant, ne pouvait demeurer sans épreuve, car le Quai du Trident eut à affronter des menaces d'une nature sans cesse renouvelée. Aux heures ténébreuses qui devancèrent la Quatrième Guerre, la maison Chantorage céda d'abord aux insinuations de la reine Azshara comme à l'emprise de N'Zoth, entreprenant de transmuer le paisible comptoir en avant-poste de leur domination abyssale, dessein qui, néanmoins, échoua. Aux manœuvres du Vide succédèrent bientôt les assauts de la Horde, lesquels révélèrent toute l'importance du rôle défensif de la Compagnie des Barges. Puis, les grands périls une fois dissipés, vinrent des fléaux plus sournois : car cette terre de promesses n'échappe ni au trafic de fausse monnaie ni au pillage des cargaisons. Contre ces désordres s'emploie la maison Sombrabysse qui, forte d'une résidence, d'entrepôts, de plusieurs navires et d'une salle des portails, concourt tout ensemble au renom et à la prospérité de ces parages. Aussi, depuis que le seigneur Brannon Chantorage a succédé à son oncle, cette maison administre-t-elle officiellement les quais, avec son plein assentiment, s'efforçant ainsi d'endiguer de tels désordres.`, image: "Sombrabysse.png" },
-    { id: 21, name: "Quai du Trident", x: 60.889, y: 3.32, type: "big", text: `Au point exact où la grande mer se fraie un passage entre les ombreuses forêts de Drustvar et la rade de Tiragarde se dresse le Quai du Trident, village singulier dont les édifices se déploient tout à la fois sur l'une et l'autre berge. Aussi nul seigneur ne saurait-il prétendre à sa pleine possession : sise à mi-chemin entre deux contrées, au cœur même de cette brèche maritime, la localité ne relève que de l'autorité conciliatrice de la maison Chantorage, qui préside aux affaires des flots au nom du culte voué à la Mère des Marées.<br><br>Toutefois, bien au-delà des seuls avantages que lui confère son assise géographique, le Quai du Trident doit sa longue prospérité à la munificence de ses eaux. Depuis des temps immémoriaux, en effet, l'abondance des ressources marines alimente la fortune du lieu, au rythme incessant des chalutiers, pêcheurs et pourfendeurs de monstres marins qui, revenus du large, déchargent leurs prises vers les ateliers de la berge méridionale. Sur la rive opposée, à l'inverse, se déploient marchés et échoppes, où s'amoncellent denrées locales et marchandises venues d'horizons lointains ; là se presse une foule laborieuse et bigarrée, mêlant matelots, ouvriers, ravaudeurs, négociants, aventuriers et eaugures.<br><br>Une telle quiétude, cependant, ne pouvait demeurer sans épreuve, car le Quai du Trident eut à affronter des menaces d'une nature sans cesse renouvelée. Aux heures ténébreuses qui devancèrent la Quatrième Guerre, la maison Chantorage céda d'abord aux insinuations de la reine Azshara comme à l'emprise de N'Zoth, entreprenant de transmuer le paisible comptoir en avant-poste de leur domination abyssale, dessein qui, néanmoins, échoua. Aux manœuvres du Vide succédèrent bientôt les assauts de la Horde, lesquels révélèrent toute l'importance du rôle défensif de la Compagnie des Barges. Puis, les grands périls une fois dissipés, vinrent des fléaux plus sournois : car cette terre de promesses n'échappe ni au trafic de fausse monnaie ni au pillage des cargaisons. Contre ces désordres s'emploie la maison Sombrabysse qui, forte d'une résidence, d'entrepôts, de plusieurs navires et d'une salle des portails, concourt tout ensemble au renom et à la prospérité de ces parages. Aussi, depuis que le seigneur Brannon Chantorage a succédé à son oncle, cette maison administre-t-elle officiellement les quais, avec son plein assentiment, s'efforçant ainsi d'endiguer de tels désordres.`, image: "Sombrabysse.png" },
+    { id: 20, name: "Quai du Trident", x: 57.959, y: 7.487, type: "big", text: `Au point exact où la grande mer se fraie un passage entre les ombreuses forêts de Drustvar et la rade de Tiragarde se dresse le Quai du Trident, village singulier dont les édifices se déploient tout à la fois sur l'une et l'autre berge. Aussi nul seigneur ne saurait-il prétendre à sa pleine possession : sise à mi-chemin entre deux contrées, au cœur même de cette brèche maritime, la localité ne relève que de l'autorité conciliatrice de la maison Chantorage, qui préside aux affaires des flots au nom du culte voué à la Mère des Marées.<br><br>Toutefois, bien au-delà des seuls avantages que lui confère son assise géographique, le Quai du Trident doit sa longue prospérité à la munificence de ses eaux. Depuis des temps immémoriaux, en effet, l'abondance des ressources marines alimente la fortune du lieu, au rythme incessant des chalutiers, pêcheurs et pourfendeurs de monstres marins qui, revenus du large, déchargent leurs prises vers les ateliers de la berge méridionale. Sur la rive opposée, à l'inverse, se déploient marchés et échoppes, où s'amoncellent denrées locales et marchandises venues d'horizons lointains ; là se presse une foule laborieuse et bigarrée, mêlant matelots, ouvriers, ravaudeurs, négociants, aventuriers et eaugures.<br><br>Une telle quiétude, cependant, ne pouvait demeurer sans épreuve, car le Quai du Trident eut à affronter des menaces d'une nature sans cesse renouvelée. Aux heures ténébreuses qui devancèrent la Quatrième Guerre, la maison Chantorage céda d'abord aux insinuations de la reine Azshara comme à l'emprise de N'Zoth, entreprenant de transmuer le paisible comptoir en avant-poste de leur domination abyssale, dessein qui, néanmoins, échoua. Aux manœuvres du Vide succédèrent bientôt les assauts de la Horde, lesquels révélèrent toute l'importance du rôle défensif de la Compagnie des Barges. Puis, les grands périls une fois dissipés, vinrent des fléaux plus sournois : car cette terre de promesses n'échappe ni au trafic de fausse monnaie ni au pillage des cargaisons. Contre ces désordres s'emploie la maison Sombrabysse qui, forte d'une résidence, d'entrepôts, de plusieurs navires et d'une salle des portails, concourt tout ensemble au renom et à la prospérité de ces parages. Aussi, depuis que le seigneur Brannon Chantorage a succédé à son oncle, cette maison administre-t-elle officiellement les quais, avec son plein assentiment, s'efforçant ainsi d'endiguer de tels désordres.`, images: ["Sombrabysse.png", "Chantorage.png"] },
+    { id: 21, name: "Quai du Trident", x: 60.889, y: 3.32, type: "big", text: `Au point exact où la grande mer se fraie un passage entre les ombreuses forêts de Drustvar et la rade de Tiragarde se dresse le Quai du Trident, village singulier dont les édifices se déploient tout à la fois sur l'une et l'autre berge. Aussi nul seigneur ne saurait-il prétendre à sa pleine possession : sise à mi-chemin entre deux contrées, au cœur même de cette brèche maritime, la localité ne relève que de l'autorité conciliatrice de la maison Chantorage, qui préside aux affaires des flots au nom du culte voué à la Mère des Marées.<br><br>Toutefois, bien au-delà des seuls avantages que lui confère son assise géographique, le Quai du Trident doit sa longue prospérité à la munificence de ses eaux. Depuis des temps immémoriaux, en effet, l'abondance des ressources marines alimente la fortune du lieu, au rythme incessant des chalutiers, pêcheurs et pourfendeurs de monstres marins qui, revenus du large, déchargent leurs prises vers les ateliers de la berge méridionale. Sur la rive opposée, à l'inverse, se déploient marchés et échoppes, où s'amoncellent denrées locales et marchandises venues d'horizons lointains ; là se presse une foule laborieuse et bigarrée, mêlant matelots, ouvriers, ravaudeurs, négociants, aventuriers et eaugures.<br><br>Une telle quiétude, cependant, ne pouvait demeurer sans épreuve, car le Quai du Trident eut à affronter des menaces d'une nature sans cesse renouvelée. Aux heures ténébreuses qui devancèrent la Quatrième Guerre, la maison Chantorage céda d'abord aux insinuations de la reine Azshara comme à l'emprise de N'Zoth, entreprenant de transmuer le paisible comptoir en avant-poste de leur domination abyssale, dessein qui, néanmoins, échoua. Aux manœuvres du Vide succédèrent bientôt les assauts de la Horde, lesquels révélèrent toute l'importance du rôle défensif de la Compagnie des Barges. Puis, les grands périls une fois dissipés, vinrent des fléaux plus sournois : car cette terre de promesses n'échappe ni au trafic de fausse monnaie ni au pillage des cargaisons. Contre ces désordres s'emploie la maison Sombrabysse qui, forte d'une résidence, d'entrepôts, de plusieurs navires et d'une salle des portails, concourt tout ensemble au renom et à la prospérité de ces parages. Aussi, depuis que le seigneur Brannon Chantorage a succédé à son oncle, cette maison administre-t-elle officiellement les quais, avec son plein assentiment, s'efforçant ainsi d'endiguer de tels désordres.`, images: ["Sombrabysse.png", "Chantorage.png"] },
     { id: 22, name: "Corvenac", x: 61.865, y: 78.177, type: "big", text: "", image: "Corven.png" },
     { id: 23, name: "Capembrun", x: 21.582, y: 25.911, type: "big", text: "", image: "Rougepince.png" },
     { id: 24, name: "Chapelle des Bois-Blancs", x: 23.291, y: 13.216, type: "small", text: "", image: "ChapelleBoisBlancs.png" },
@@ -601,19 +612,18 @@
   function openPopup(loc) {
     if (moved) return; // ne pas ouvrir si on vient de glisser
     document.getElementById('popup-title').textContent = loc.name || ('Lieu n°' + loc.id);
-    // image (blason) éventuelle
+    // image(s) (blason) éventuelle(s) : loc.images (liste) ou loc.image (unique)
     const imgBox = document.getElementById('popup-image');
-    if (loc.image) {
-      imgBox.innerHTML = '';
+    imgBox.innerHTML = '';
+    const imgList = loc.images ? loc.images : (loc.image ? [loc.image] : []);
+    imgList.forEach(src => {
       const im = document.createElement('img');
-      im.src = loc.image;
+      im.src = src;
       im.alt = loc.name || '';
       im.title = "Cliquer pour agrandir";
-      im.addEventListener('click', () => openLightbox(loc.image, loc.name));
+      im.addEventListener('click', () => openLightbox(src, loc.name));
       imgBox.appendChild(im);
-    } else {
-      imgBox.innerHTML = '';
-    }
+    });
     // devise éventuelle (entre le blason et le texte)
     const deviseBox = document.getElementById('popup-devise');
     deviseBox.innerHTML = loc.devise ? '<span class="devise-inner">' + loc.devise + '</span>' : '';
