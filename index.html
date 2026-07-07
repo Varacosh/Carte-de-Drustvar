@@ -235,6 +235,50 @@
     font-weight: 600;
     color: #6a3d12;
   }
+  /* mots dotés d'une infobulle */
+  #popup .body .glose {
+    cursor: help;
+    border-bottom: 1px dotted rgba(106, 61, 18, 0.6);
+  }
+  /* infobulle flottante */
+  #tooltip {
+    position: fixed;
+    z-index: 300;
+    max-width: 280px;
+    background: linear-gradient(160deg, #f6efdc 0%, #ece1c6 100%);
+    color: #3a2810;
+    border: 1px solid #8a6a3a;
+    border-radius: 8px;
+    padding: 11px 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    font-style: normal;
+    text-align: left;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35),
+                inset 0 0 0 3px rgba(243, 236, 216, 0.85);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.14s ease, transform 0.14s ease;
+  }
+  #tooltip.show { opacity: 1; transform: translateY(0); }
+  /* petite flèche sous la bulle */
+  #tooltip::after {
+    content: '';
+    position: absolute;
+    left: var(--arrow-x, 50%);
+    bottom: -7px;
+    transform: translateX(-50%);
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 7px solid #8a6a3a;
+  }
+  #tooltip.below::after {
+    bottom: auto;
+    top: -7px;
+    border-top: none;
+    border-bottom: 7px solid #8a6a3a;
+  }
   /* lettrine discrète sur le premier paragraphe */
   #popup .body::first-letter {
     font-size: 2.6em;
@@ -387,6 +431,9 @@
   <img id="lightbox-img" src="" alt="">
 </div>
 
+<!-- Infobulle au survol des mots -->
+<div id="tooltip"></div>
+
 <script>
   /* ============================================================
      LIEUX DE LA CARTE
@@ -408,7 +455,7 @@
     { id:  8, name: "Cornemont", x: 48.096, y: 27.773, type: "big", text: "", image: "Tromann.png" },
     { id:  9, name: "Hauts de Corlain", x: 33.496, y: 15.755, type: "square", text: "", image: "Malvoie.png" },
     { id: 10, name: "Corlain", x: 29.785, y: 25.482, type: "big", text: "", image: "Malvoie.png" },
-    { id: 11, name: "Tour Crefort", x: 37.5, y: 54.349, type: "small", image: "Crefort.png", devise: "Forgés par le feu, tempérés par l'honneur", text: `Dressée sur les crêtes surplombant la forêt Cramoisie, la <b>tour Crefort</b> veillait jadis sur les sentiers plongeant sous la ramure. La <b>maison Crefort</b>, qui légua son nom à l'édifice, y maintenait une garnison réduite, mais d'un mérite unanimement salué : la rumeur créditait chacun de ses soldats de la force de cinq hommes, tant ils déployaient de génie à tirer parti du terrain pour infléchir l'issue d'une bataille.<br><br>Cette lignée valeureuse sombra pourtant lors du soulèvement fomenté par la <b>maison Bonval</b> contre les <b>Malvoie</b>. <b>Hattie Crefort</b>, qui gouvernait alors les siens, se rangea sous la bannière rebelle. C'est ainsi que, devant les murs de <b>Froidecombe</b>, s'efforçant d'endiguer la coalition dressée contre Bonval, elle succomba aux coups de <b>Heideck Tertrebois</b> au terme d'un duel farouche. À l'annonce de ce revers, la garde demeurée à la tour abjura son serment : après avoir pillé les biens confiés à sa vigilance, elle gagna les chemins, où ces hommes écument désormais les routes en brigands.<br><br>Le nom des Crefort n'en fut pas pour autant effacé. <b>Dame Lucille Malvoie</b> accorda en effet sa clémence à <b>Cierra Crefort</b>, son ultime dépositaire, estimant qu'un enfant ne saurait répondre des égarements de ses géniteurs. Depuis lors, la jeune fille grandit au <b>manoir Malvoie</b>, où elle reçoit l'instruction que réclame son rang ; à sa majorité, la tour devrait lui échoir de plein droit. Jusque-là, cependant, dépourvue de maître comme de garnison, elle se délite peu à peu sous la morsure du temps.` },
+    { id: 11, name: "Tour Crefort", x: 37.5, y: 54.349, type: "small", image: "Crefort.png", devise: "Forgés par le feu, tempérés par l'honneur", text: `Dressée sur les crêtes surplombant la forêt Cramoisie, la <b class="glose" data-info="La tour Crefort est un ouvrage de guet perché sur les hauteurs qui dominent la forêt Cramoisie, à l'est. Elle appartient à la maison éponyme.">tour Crefort</b> veillait jadis sur les sentiers plongeant sous la ramure. La <b>maison Crefort</b>, qui légua son nom à l'édifice, y maintenait une garnison réduite, mais d'un mérite unanimement salué : la rumeur créditait chacun de ses soldats de la force de cinq hommes, tant ils déployaient de génie à tirer parti du terrain pour infléchir l'issue d'une bataille.<br><br>Cette lignée valeureuse sombra pourtant lors du soulèvement fomenté par la <b>maison Bonval</b> contre les <b>Malvoie</b>. <b>Hattie Crefort</b>, qui gouvernait alors les siens, se rangea sous la bannière rebelle. C'est ainsi que, devant les murs de <b>Froidecombe</b>, s'efforçant d'endiguer la coalition dressée contre Bonval, elle succomba aux coups de <b>Heideck Tertrebois</b> au terme d'un duel farouche. À l'annonce de ce revers, la garde demeurée à la tour abjura son serment : après avoir pillé les biens confiés à sa vigilance, elle gagna les chemins, où ces hommes écument désormais les routes en brigands.<br><br>Le nom des Crefort n'en fut pas pour autant effacé. <b>Dame Lucille Malvoie</b> accorda en effet sa clémence à <b>Cierra Crefort</b>, son ultime dépositaire, estimant qu'un enfant ne saurait répondre des égarements de ses géniteurs. Depuis lors, la jeune fille grandit au <b>manoir Malvoie</b>, où elle reçoit l'instruction que réclame son rang ; à sa majorité, la tour devrait lui échoir de plein droit. Jusque-là, cependant, dépourvue de maître comme de garnison, elle se délite peu à peu sous la morsure du temps.` },
     { id: 12, name: "Rucherain", x: 44.922, y: 55, type: "big", text: "", image: "Mellifor.png" },
     { id: 13, name: "Griseroche", x: 38.721, y: 62.292, type: "big", text: "", image: "Forpin.png" },
     { id: 14, name: "Tertrebois", x: 62.451, y: 53.411, type: "big", text: "", image: "Tertrebois.png" },
@@ -656,6 +703,55 @@
     if (lightbox.classList.contains('open')) closeLightbox();  // l'image se ferme en premier
     else closePopup();
   });
+
+  /* ---- Infobulle au survol des mots .glose ---- */
+  const tooltip = document.getElementById('tooltip');
+  const popupBody = document.getElementById('popup-body');
+
+  function showTooltip(el) {
+    const info = el.getAttribute('data-info');
+    if (!info) return;
+    tooltip.innerHTML = info;
+    tooltip.classList.add('show');
+    positionTooltip(el);
+  }
+  function hideTooltip() {
+    tooltip.classList.remove('show', 'below');
+  }
+  function positionTooltip(el) {
+    const r = el.getBoundingClientRect();
+    // mesurer la bulle
+    tooltip.style.left = '0px';
+    tooltip.style.top = '0px';
+    const tw = tooltip.offsetWidth, th = tooltip.offsetHeight;
+    const margin = 8;
+    // centré horizontalement sur le mot, borné à l'écran
+    let cx = r.left + r.width / 2;
+    let left = cx - tw / 2;
+    left = Math.max(margin, Math.min(window.innerWidth - tw - margin, left));
+    // au-dessus si possible, sinon en dessous
+    let top = r.top - th - 10;
+    let below = false;
+    if (top < margin) { top = r.bottom + 10; below = true; }
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+    tooltip.classList.toggle('below', below);
+    // flèche pointant vers le mot
+    const arrowX = Math.max(12, Math.min(tw - 12, cx - left));
+    tooltip.style.setProperty('--arrow-x', arrowX + 'px');
+  }
+
+  // délégation : un seul écouteur sur le corps du texte
+  popupBody.addEventListener('mouseover', (e) => {
+    const g = e.target.closest('.glose');
+    if (g) showTooltip(g);
+  });
+  popupBody.addEventListener('mouseout', (e) => {
+    const g = e.target.closest('.glose');
+    if (g) hideTooltip();
+  });
+  // masquer la bulle si on ferme le pop-up ou on défile
+  popupBody.addEventListener('scroll', hideTooltip);
 
   /* ---- Init ---- */
   document.getElementById('zoom-in').addEventListener('click', () => zoomButton(1));
