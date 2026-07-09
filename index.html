@@ -73,7 +73,6 @@
     left: 0;
     aspect-ratio: 2048 / 1536;
     transform-origin: 0 0;     /* le zoom se calcule depuis le coin haut-gauche */
-    will-change: transform;
     --u: 1px;                  /* 1 unité = 1px de la carte affichée, recalculé en JS */
   }
   #map-img {
@@ -83,6 +82,11 @@
     user-select: none;
     -webkit-user-drag: none;
     pointer-events: none;      /* l'image ne capte pas le glisser */
+    /* rendu net et de haute qualité, notamment sur Chrome */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: high-quality;
+    -ms-interpolation-mode: bicubic;
+    backface-visibility: hidden;
   }
   #markers {
     position: absolute;
