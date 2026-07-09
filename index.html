@@ -484,7 +484,7 @@
     { id: 37, name: "Manoir Malvoie", x: 34.696, y: 9.049, type: "small", text: "", image: "Malvoie.png" },
     { id: 38, name: "Quai d'Accastillage", x: 29.688, y: 11.784, type: "big", text: "", image: "QuaidAccastillage.png" },
     { id: 39, name: "Porte de Daelin", x: 88.774, y: 62.527, type: "small", text: "", image: "Portvaillant.png" },
-    { id: 40, name: "Guet de l'Ouest", x: 15.129, y: 6.836, type: "small", text: "", image: "Guetdelouest.png" },
+    { id: 40, name: "Guet de l'Ouest", x: 15.129, y: 6.836, type: "small", sound: "Karine.mp3", soundChance: 0.1, text: `Aucun sentier ne relie le Guet de l'Ouest à la terre ferme. Perché sur un rocher qui perce les flots au nord-ouest du Drustvar, il ne se laisse atteindre que par la mer, une plage et un modeste embarcadère formant l'unique point d'accostage, alors que la marée basse elle-même en défend l'approche. Son fanal n'en assume pas moins une fonction essentielle, car il guide les vaisseaux le long des rétives côtes drustvari, indiquant la route du Quai d'Accastillage tout en balisant la traversée du détroit qui s'ouvre sur le Quai du Trident.<br><br>Aujourd'hui encore, des vestiges drust y subsistent, rappelant qu'avant l'Amirauté de Kul Tiras, d'autres peuples habitaient ces terres. Désormais, seuls ses gardiens y demeurent et partagent ces grèves avec les crabes et les phoques. La Quatrième Guerre y vit pourtant s'établir l'Alliance, sous les ordres d'Amaeas Branchétoile, qui y commandait une compagnie réunissant sentinelles elfes de la nuit et soldats de Hurlevent, afin de protéger l'un des trois accès de l'archipel.`, image: "Guetdelouest.png" },
     { id: 41, name: "Courbécueil", x: 75.586, y: 86.849, type: "big", text: "", image: "Courbécueil.png" },
     { id: 42, name: "Rouillécorce", x: 55.463, y: 26.408, type: "small", text: "", image: "Rouillecorce.png" },
     { id: 43, name: "Creuxgivre", x: 44.293, y: 51.025, type: "small", text: "", image: "Creuxgivre.png" },
@@ -742,12 +742,24 @@
      La mise en gras couvre : toutes les clés de GLOSSAIRE + cette liste.
      (première occurrence de chaque terme dans chaque texte) */
   const TERMES_SANS_DEF = [
+    "Guet de l'Ouest",
+    "drustvari",
+    "Quai d'Accastillage",
+    "Quai du Trident",
+    "Amirauté de Kul Tiras",
+    "Alliance",
+    "Amaeas Branchétoile",
+    "Hurlevent",
     "Kul Tiras",
     "Grande mer",
   ];
 
   function openPopup(loc) {
     if (moved) return; // ne pas ouvrir si on vient de glisser
+    // private joke : son joué aléatoirement selon la probabilité du lieu
+    if (loc.sound && Math.random() < (loc.soundChance || 1)) {
+      try { new Audio(loc.sound).play().catch(() => {}); } catch (e) {}
+    }
     document.getElementById('popup-title').textContent = loc.name || ('Lieu n°' + loc.id);
     // image(s) (blason) éventuelle(s) : loc.images (liste) ou loc.image (unique)
     const imgBox = document.getElementById('popup-image');
@@ -784,15 +796,14 @@
 
     // échappe les caractères spéciaux regex
     const echap = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    // caractères considérés comme "lettre" (avec accents, apostrophe, tiret)
-    const L = "A-Za-zÀ-ÿ'\\-";
+    // caractères considérés comme "lettre" pour les frontières de mot (accents inclus).
+    // L'apostrophe n'est PAS incluse : l'élision (l', d', qu') sépare bien les mots.
+    const L = "A-Za-zÀ-ÿ";
 
     termes.forEach(terme => {
       if (dejaVus.has(terme)) return;
-      // frontières de mot : ni lettre avant, ni lettre après
+      // frontières : ni lettre juste avant, ni lettre juste après
       const re = new RegExp('(?<![' + L + '])(' + echap(terme) + ')(?![' + L + '])');
-      // ne pas remplacer à l'intérieur d'une balise <b ...>...</b> déjà posée :
-      // on découpe le HTML en segments hors-balises et on ne traite que ceux-là.
       htmlTexte = remplacerHorsBalises(htmlTexte, re, terme);
     });
 
